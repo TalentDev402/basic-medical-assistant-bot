@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.pipenv/
+pip-wheel-metadata/
+
+# VS Code settings
+.vscode/
+
+# PyCharm
+.idea/
+
+# Model files
+model/
+*.joblib
+*.pkl
+
+# Data
+data/*.csv
+!data/README.md  # Keep a placeholder or README for data folder
+
+# Logs and outputs
+logs/
+*.log
+
+# MacOS
+.DS_Store
+
+# Python environment files
+*.egg-info/
+dist/
+build/
+
+# Sample outputs
+sample_interactions.txt
+
+# Notebook output cache
+.cache/
+
+# Env files
+.env
+.env.*
+
+# Coverage and test files
+htmlcov/
+.tox/
+.coverage
+nosetests.xml
+test-results/
