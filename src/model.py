@@ -1,27 +1,34 @@
+# src/model.py
+
+import os
+import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import joblib
+from sklearn.neighbors import KNeighborsClassifier
 
 class MedicalQABot:
     def __init__(self):
         self.vectorizer = TfidfVectorizer()
-        self.questions = []
-        self.answers = []
-        self.question_vectors = None
+        self.classifier = KNeighborsClassifier(n_neighbors=3)
 
     def train(self, questions, answers):
-        self.questions = questions
-        self.answers = answers
-        self.question_vectors = self.vectorizer.fit_transform(questions)
+        X = self.vectorizer.fit_transform(questions)
+        self.classifier.fit(X, answers)
 
-    def save_model(self, model_path="model"):
-        joblib.dump((self.vectorizer, self.questions, self.answers, self.question_vectors), model_path)
+    def answer(self, question):
+        X = self.vectorizer.transform([question])
+        prediction = self.classifier.predict(X)[0]
+        confidence = self.classifier.predict_proba(X).max()
+        return prediction, confidence
 
-    def load_model(self, model_path="model"):
-        self.vectorizer, self.questions, self.answers, self.question_vectors = joblib.load(model_path)
+    def save_model(self, model_dir):
+        os.makedirs(model_dir, exist_ok=True)
+        with open(os.path.join(model_dir, "vectorizer.pkl"), "wb") as f:
+            pickle.dump(self.vectorizer, f)
+        with open(os.path.join(model_dir, "classifier.pkl"), "wb") as f:
+            pickle.dump(self.classifier, f)
 
-    def get_answer(self, user_query):
-        query_vector = self.vectorizer.transform([user_query])
-        similarities = cosine_similarity(query_vector, self.question_vectors).flatten()
-        best_match_index = similarities.argmax()
-        return self.answers[best_match_index], similarities[best_match_index]
+    def load_model(self, model_dir):
+        with open(os.path.join(model_dir, "vectorizer.pkl"), "rb") as f:
+            self.vectorizer = pickle.load(f)
+        with open(os.path.join(model_dir, "classifier.pkl"), "rb") as f:
+            self.classifier = pickle.load(f)
